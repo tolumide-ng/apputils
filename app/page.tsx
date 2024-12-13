@@ -77,7 +77,7 @@ export default function Page() {
         <div className="mb-8">
           <select onChange={handleChange} name='actionType' className='w-64 mb-4' >
             {Object.keys(options).map((label) => (
-              <option value={label} key={label}>{label}</option>goit
+              <option value={label} key={label}>{label}</option>
             ))}
           </select>
           

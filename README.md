@@ -1,5 +1,8 @@
-## Next.js App Router Course - Starter
+## Small Util
+This is only a small util for easy conversion from UTF-8 to Hexadecimal or Decimal and vice versa
+- Used on a different library I'm building elsewhere
 
-This is the starter template for the Next.js App Router Course. It contains the starting code for the dashboard application.
 
-For more information, see the [course curriculum](https://nextjs.org/learn) on the Next.js Website.
+## How to run this project
+1. Ensure you have your environment setup with `Nodejs` and `pnpm`
+2. Run `pnpm run dev`
