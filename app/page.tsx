@@ -1,32 +1,103 @@
-import AcmeLogo from '@/app/ui/acme-logo';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
-import Link from 'next/link';
+'use client'
+
+import { useEffect, useRef, useState } from 'react';
+import { Format, StringByteCodec } from './utils/stringByteCodec';
+
+enum Action {
+  Encode = "encode",
+  Decode = "decode",
+}
+
+
+type State<T> = {
+  input: T extends Action.Encode ? string : AllowSharedBufferSource
+  output: string
+  // output: string
+  error: string
+}
+
+const options = {
+  "utf-8 to Decimal": { action: Action.Encode, format: Format.Decimal, input: 'UTF-8', output: 'Decimal' },
+  "utf-8 to Hexadecimal": { action: Action.Encode, format: Format.Hexadecimal, input: 'UTF-8', output: 'Hexadecimal' },
+  "Decimal to utf-8": { action: Action.Decode, format: Format.Decimal, input: 'Decimal', output: 'UTF-8' },
+  "Hexadecimal to utf-8": { action: Action.Decode,  format: Format.Hexadecimal, input: "Hexadecimal", output: 'UTF-8'},
+}
+
+type OptionKey = keyof typeof options;
+
+
+function initialState(action: OptionKey): State<Action> {
+  if (options[action].action == Action.Encode) {
+    return { input: '', output: '', error: '' }
+  } 
+  return {input: new Uint8Array(), output: '', error: '' }
+}
+
 
 export default function Page() {
+
+  const [action, setAction] = useState<OptionKey>("utf-8 to Decimal")
+
+  const [state, setState] = useState<State<Action>>(initialState(action))
+
+  const stringByetCodec = useRef<null | StringByteCodec>(null);
+
+
+  useEffect(() => {
+    stringByetCodec.current = new StringByteCodec()
+  }, [])
+
+  function handleChange(event: React.ChangeEvent<HTMLSelectElement | HTMLTextAreaElement>) { 
+    const { name, value } = event.target;
+
+    if (name === "actionType") {
+
+      setAction(value as OptionKey)
+      setState(initialState(value as OptionKey))
+      return;
+    }
+
+    if (!stringByetCodec.current) return;
+
+    if (options[action].action == Action.Encode) {
+      const output = stringByetCodec.current?.encode(value as string, options[action].format).toString();
+      setState({input: value, output, error: ''})
+      } else {
+      try {
+        setState({input: value, output: stringByetCodec.current?.decode(value as string, options[action].format), error: ''})
+      } catch (error) {
+        setState({input: value, output: '', error: (error as Error)?.message} ?? "Invalid format")
+      }
+    }
+  }
+
   return (
-    <main className="flex min-h-screen flex-col p-6">
-      <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">
-        {/* <AcmeLogo /> */}
-      </div>
-      <div className="mt-4 flex grow flex-col gap-4 md:flex-row">
-        <div className="flex flex-col justify-center gap-6 rounded-lg bg-gray-50 px-6 py-10 md:w-2/5 md:px-20">
-          <p className={`text-xl text-gray-800 md:text-3xl md:leading-normal`}>
-            <strong>Welcome to Acme.</strong> This is the example for the{' '}
-            <a href="https://nextjs.org/learn/" className="text-blue-500">
-              Next.js Learn Course
-            </a>
-            , brought to you by Vercel.
-          </p>
-          <Link
-            href="/login"
-            className="flex items-center gap-5 self-start rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-400 md:text-base"
-          >
-            <span>Log in</span> <ArrowRightIcon className="w-5 md:w-6" />
-          </Link>
+    <main className="flex min-h-screen flex-col p-6 border-slate-100 w-full items-center">
+      <div className="">
+        <div className="mb-8">
+          <select onChange={handleChange} name='actionType' className='w-64 mb-4' >
+            {Object.keys(options).map((label) => (
+              <option value={label} key={label}>{label}</option>goit
+            ))}
+          </select>
+          
+          <p className='text-sm text-red-500'>{state.error}</p>
+
         </div>
-        <div className="flex items-center justify-center p-6 md:w-3/5 md:px-28 md:py-12">
-          {/* Add Hero Images Here */}
+
+        <div className="flex gap-8">
+          <div className="">
+            <p>{options[action].input}</p>
+            <textarea name='input' value={state.input.toString()} onChange={handleChange} rows={30} cols={50}  />
+          </div>
+
+          <div className="">
+            <p>{options[action].output}</p>
+            <textarea name='output' value={state.output.toString()} onChange={handleChange} rows={30} cols={50} disabled />
+          </div>
+
         </div>
+
       </div>
     </main>
   );
