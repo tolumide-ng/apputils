@@ -66,7 +66,7 @@ export default function Page() {
       try {
         setState({input: value, output: stringByetCodec.current?.decode(value as string, options[action].format), error: ''})
       } catch (error) {
-        setState({input: value, output: '', error: (error as Error)?.message} ?? "Invalid format")
+        setState({input: value, output: '', error: (error as Error)?.message || "Invalid format"})
       }
     }
   }
