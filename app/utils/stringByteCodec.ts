@@ -22,12 +22,12 @@ export class StringByteCodec {
         // 2. Space-separated hexadecimal or decimal
         
         const value = (() => {
-            if (/^[0-9A-Fa-f\s+,]+$/.test(input)) {
+            if (/^((0x)?[0-9A-Fa-f]+\s*,\s*)*((0x)?[0-9A-Fa-f]+\s*)$/.test(input)) {
                 return input.split(",").map(x => {
                     const base = format === Format.Hexadecimal ? 16 : 10;
                     return parseInt(x.trim(), base);
                 })
-            } else if (/^[0-9A-Fa-f\s]+$/.test(input)) {
+            } else if (/^((0x)?[0-9A-Fa-f]+\s+)*((0x)?[0-9A-Fa-f]+\s*)$/.test(input)) {
                 return input.split(/\s+/).map(x => {
                     const base = format === Format.Hexadecimal ? 16 : 10;
                     return parseInt(x.trim(), base);
