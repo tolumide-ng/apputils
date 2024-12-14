@@ -19,6 +19,3 @@ runs:
       - name: Build Next.js
         run: pnpm run build
         shell: bash
-      - name: Export static site (next export)
-        run: pnpm run export
-        shell: bash
