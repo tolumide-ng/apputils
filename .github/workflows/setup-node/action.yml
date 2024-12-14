@@ -1,0 +1,24 @@
+name: setup-node
+description: "Checkout + Setup Nodejs + Cache + Install dependencies"
+runs:
+    using: "composite"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Use Node.js v21
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+        shell: bash
+      - name: Build Next.js
+        run: pnpm run build
+        shell: bash
+      - name: Export static site (next export)
+        run: pnpm run export
+        shell: bash
