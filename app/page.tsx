@@ -60,7 +60,7 @@ export default function Page() {
     if (!stringByetCodec.current) return;
 
     if (options[action].action == Action.Encode) {
-      const output = stringByetCodec.current?.encode(value as string, options[action].format).toString();
+      const output = stringByetCodec.current?.encode(value as string, options[action].format).toString().split(",").join(" ");
       setState({input: value, output, error: ''})
       } else {
       try {
